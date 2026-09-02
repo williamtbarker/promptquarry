@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "promptquarry"
+version = "0.1.0"
+description = "Recover, rank, and deduplicate code from large ChatGPT export archives"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Will Barker" }]
+keywords = ["chatgpt", "code-recovery", "digital-forensics", "sqlite", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Text Processing :: Indexing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.11",
+  "ruff>=0.6",
+  "setuptools>=68",
+  "wheel>=0.43",
+]
+
+[project.scripts]
+promptquarry = "promptquarry.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/williamtbarker/promptquarry"
+Repository = "https://github.com/williamtbarker/promptquarry"
+Issues = "https://github.com/williamtbarker/promptquarry/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+promptquarry = ["py.typed"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "N", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src"]

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-27
+
 ### Fixed
 
 - Reject conversations with missing or non-object message mappings instead of silently replacing

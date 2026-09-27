@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Reject conversations with missing or non-object message mappings instead of silently replacing
+  an existing index with incomplete recovery results. Empty mappings and structural nodes remain
+  supported; regression tests cover failed rebuild preservation and empty exports.
+
 ## [0.1.0] - 2026-09-02
 
 ### Added

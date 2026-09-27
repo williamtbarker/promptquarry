@@ -140,6 +140,39 @@ class IndexTests(unittest.TestCase):
             self.quarry.build(self.root / "missing.zip")
         self.assertEqual(self.quarry.summary()["conversations"], 2)
 
+    def test_unsupported_conversation_mapping_preserves_existing_index(self) -> None:
+        self.quarry.build(self.archive)
+        original = self.database.read_bytes()
+        unsupported = [
+            {"id": "missing", "messages": [message("m", "assistant", PYTHON_CODE)]},
+            {"id": "null", "mapping": None},
+            {"id": "list", "mapping": []},
+            {"id": "string", "mapping": "unsupported"},
+        ]
+        for record in unsupported:
+            with self.subTest(record=record["id"]):
+                archive = write_archive(
+                    self.root / "unsupported.zip", [sample_conversations()[0], record]
+                )
+                with self.assertRaisesRegex(QuarryError, "conversation.*mapping"):
+                    self.quarry.build(archive)
+                self.assertEqual(self.database.read_bytes(), original)
+                self.assertEqual(self.quarry.summary()["unique_blocks"], 3)
+
+    def test_empty_archives_and_conversation_nodes_remain_supported(self) -> None:
+        empty_archive = write_archive(self.root / "empty.zip", [])
+        result = self.quarry.build(empty_archive)
+        self.assertEqual((result.conversations, result.messages, result.unique_blocks), (0, 0, 0))
+
+        structural = conversation("structural", "Empty tree", [])
+        structural["mapping"] = {"root": {"id": "root", "parent": None, "message": None}}
+        empty_conversations = write_archive(
+            self.root / "empty-conversations.zip",
+            [conversation("empty", "Empty conversation", []), structural],
+        )
+        result = self.quarry.build(empty_conversations)
+        self.assertEqual((result.conversations, result.messages, result.unique_blocks), (2, 0, 0))
+
     @unittest.skipIf(os.name == "nt", "POSIX file modes are not available")
     def test_exported_manifest_is_private(self) -> None:
         self.quarry.build(self.archive)

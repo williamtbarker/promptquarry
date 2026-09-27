@@ -154,6 +154,11 @@ def iter_archive_conversations(
                                 raise ArchiveFormatError(
                                     f"{member.filename} contains a non-object conversation"
                                 )
+                            if not isinstance(value.get("mapping"), dict):
+                                raise ArchiveFormatError(
+                                    f"{member.filename} contains a conversation without "
+                                    "an object-valued mapping"
+                                )
                             yield member.filename, value
             except (UnicodeError, RuntimeError, zipfile.BadZipFile) as error:
                 raise ArchiveFormatError(f"cannot read {member.filename}: {error}") from error

@@ -118,8 +118,11 @@ moved into place. If rebuilding fails, a previously valid index is preserved.
 
 Conversation members must contain a top-level JSON array, which is the standard ChatGPT export
 shape. Both a single `conversations.json` and numbered chunks are supported, including members
-inside ZIP subdirectories. Export formats can evolve; malformed or unsupported structures fail
-with an explicit error rather than silently producing an incomplete index.
+inside ZIP subdirectories. Each conversation must contain an object-valued `mapping`. Malformed
+JSON, non-object conversations, and missing or non-object mappings fail with an explicit error
+without replacing an existing index. Empty arrays, empty mappings, and structural nodes without
+messages are supported. Unusable entries inside a supported mapping are skipped; the tool does
+not certify that every possible message payload contains recoverable code.
 
 ## Development
 
@@ -132,7 +135,7 @@ python -m ruff check --fix .
 ./scripts/verify.sh
 ```
 
-The verifier runs compilation, 33 unit and integration tests, Ruff, strict mypy checks, an
+The verifier runs compilation, 35 unit and integration tests, Ruff, strict mypy checks, an
 end-to-end synthetic recovery, and wheel creation. CI executes the complete suite on Python 3.10
 through 3.13.
 
@@ -142,7 +145,8 @@ through 3.13.
 - Ranking prioritizes review; it does not establish correctness, ownership, licensing, or safety.
 - Only fenced blocks and messages explicitly typed as code are indexed.
 - Search uses portable SQLite substring matching rather than language-aware indexing.
-- The tool is tailored to currently observed export structures and fails closed on unknown ones.
+- The tool requires the conversation containers described above; new export formats may need an
+  explicit parser update.
 
 ## License
 
